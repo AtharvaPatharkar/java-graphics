@@ -1,0 +1,99 @@
+import java.awt.*;
+import javax.swing.*;
+
+public class OpenLaptopDrawing extends JPanel {
+
+    @Override
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        
+        // Background Color
+        setBackground(Color.LIGHT_GRAY);
+
+        // Cast Graphics to Graphics2D for better control
+        Graphics2D g2d = (Graphics2D) g;
+        
+        // Anti-aliasing for smoother lines
+        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        
+        // Panel dimensions
+        int panelWidth = getWidth();
+        int panelHeight = getHeight();
+
+        // Laptop dimensions
+        int laptopWidth = 400;
+        int laptopHeight = 250;
+        int screenHeight = 150;
+        int baseHeight = 50;
+
+        // Centering the laptop
+        int laptopX = (panelWidth - laptopWidth) / 2;
+        int laptopY = (panelHeight - laptopHeight) / 2;
+
+        // Draw laptop base
+        g2d.setColor(Color.DARK_GRAY);
+        g2d.fillRoundRect(laptopX, laptopY + screenHeight, laptopWidth, baseHeight, 20, 20);  // x, y, width, height, arcWidth, arcHeight
+        
+        // Draw laptop screen
+        g2d.setColor(Color.BLACK);
+        g2d.fillRoundRect(laptopX, laptopY, laptopWidth, screenHeight, 20, 20);  // x, y, width, height, arcWidth, arcHeight
+        
+        // Draw screen border
+        g2d.setColor(Color.GRAY);
+        g2d.setStroke(new BasicStroke(4));
+        g2d.drawRoundRect(laptopX, laptopY, laptopWidth, screenHeight, 20, 20);
+
+        // Draw screen content (light blue color)
+        g2d.setColor(Color.CYAN);
+        g2d.fillRect(laptopX + 10, laptopY + 10, laptopWidth - 20, screenHeight - 20);
+
+        // Draw laptop keyboard base
+        g2d.setColor(Color.GRAY);
+        g2d.fillRect(laptopX + 20, laptopY + screenHeight + 10, laptopWidth - 40, baseHeight - 20);
+
+        // Draw larger keys (buttons) to the right of the laptop screen
+        g2d.setColor(Color.BLACK);
+        int keyWidth = 35;
+        int keyHeight = 15;
+        int keySpacing = 5;
+        for (int i = 0; i < 6; i++) {  // 6 rows of keys
+            g2d.fillRect(laptopX + laptopWidth + 10, laptopY + 10 + i * (keyHeight + keySpacing), keyWidth, keyHeight);  // x, y, width, height
+        }
+
+        // Draw title "Open Laptop"
+        g2d.setFont(new Font("Arial", Font.BOLD, 20));
+        g2d.setColor(Color.BLUE);
+        g2d.drawString("Open Laptop", (panelWidth - g2d.getFontMetrics().stringWidth("Open Laptop")) / 2, laptopY - 20);
+
+        // Draw some text on the screen
+        g2d.setFont(new Font("Arial", Font.PLAIN, 16));
+        g2d.setColor(Color.BLACK);
+        g2d.drawString("Hello, World!", laptopX + 160, laptopY + 80);
+
+        // Draw a mouse next to the laptop base (to the right)
+        int mouseX = laptopX + laptopWidth + 60;  // x position of the mouse
+        int mouseY = laptopY + screenHeight + 10;  // y position aligned with laptop base
+
+        // Draw mouse body (oval)
+        g2d.setColor(Color.DARK_GRAY);
+        g2d.fillOval(mouseX, mouseY, 60, 100);  // x, y, width, height
+
+        // Draw mouse buttons
+        g2d.setColor(Color.LIGHT_GRAY);
+        g2d.fillRect(mouseX + 15, mouseY + 20, 30, 30);  // First button (top part of the mouse)
+        g2d.fillRect(mouseX + 15, mouseY + 60, 30, 30);  // Second button (bottom part of the mouse)
+
+        // Draw the mouse scroll wheel
+        g2d.setColor(Color.BLACK);
+        g2d.fillRect(mouseX + 27, mouseY + 50, 6, 10);  // Scroll wheel (center between buttons)
+    }
+
+    public static void main(String[] args) {
+        JFrame frame = new JFrame("Laptop Drawing with Mouse");
+        OpenLaptopDrawing laptopPanel = new OpenLaptopDrawing();
+        frame.add(laptopPanel);
+        frame.setSize(600, 400);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setVisible(true);
+    }
+}

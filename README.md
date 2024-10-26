@@ -63,7 +63,7 @@ Follow these steps to download and run the project locally on your machine:
    - Fork the repository to your GitHub account to get your own copy 🔄.
    - Clone it to your local machine using the following command:
    ```bash
-   git clone https://github.com/ajay-dhangar/java-graphices.git
+   git clone https://github.com/AtharvaPatharkar/java-graphices.git
    ```
 
 2. **Navigate to the Project Directory** 📂:

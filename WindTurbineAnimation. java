@@ -1,0 +1,268 @@
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.Random;
+import javax.swing.*;
+
+public class WindTurbineAnimation extends JPanel implements ActionListener {
+    private Timer timer;
+    private double angle = 0; // Blade rotation angle
+    private int screenHeight, screenWidth;
+    @SuppressWarnings("FieldMayBeFinal")
+    private ArrayList<Cloud> clouds; // List of clouds
+    @SuppressWarnings("FieldMayBeFinal")
+    private ArrayList<Bird> birds; // List of birds
+    private Random random;
+
+    public WindTurbineAnimation() {
+        setPreferredSize(new Dimension(1200, 600)); // Updated screen size
+        setBackground(new Color(135, 206, 250)); // Sky blue background
+        screenHeight = 800;
+        screenWidth = 2000; // Updated width
+
+        timer = new Timer(16, this); // 60 FPS
+        timer.start();
+
+        clouds = new ArrayList<>();
+        birds = new ArrayList<>();
+        random = new Random();
+
+        // Create initial clouds
+        for (int i = 0; i < 5; i++) {
+            clouds.add(new Cloud(random.nextInt(screenWidth), random.nextInt(100) + 50));
+        }
+
+        // Create initial birds
+        for (int i = 0; i < 3; i++) {
+            birds.add(new Bird(random.nextInt(screenWidth), random.nextInt(screenHeight / 2)));
+        }
+    }
+
+    @Override
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        drawTitle(g); // Title on top
+        drawScene(g); // Draw the wind turbine scene
+        drawFooterText(g); // Footer text at the bottom
+    }
+
+    private void drawTitle(Graphics g) {
+        g.setFont(new Font("Serif", Font.BOLD, 30));
+        g.setColor(Color.RED); // Title color
+        g.drawString("Wind Turbine Animation", getWidth() / 2 - 150, 50);
+    }
+
+    private void drawFooterText(Graphics g) {
+        g.setFont(new Font("Arial", Font.PLAIN, 20));
+        g.setColor(Color.BLUE); // Footer text color
+        g.drawString("Code with AP", getWidth() / 2 - 50, getHeight() - 30);
+    }
+
+    private void drawScene(Graphics g) {
+        // Draw the sun
+        drawSun(g, 900, 50, 50);
+
+        // Draw clouds
+        for (Cloud cloud : clouds) {
+            cloud.draw(g);
+        }
+
+        // Draw birds
+        for (Bird bird : birds) {
+            bird.draw(g);
+        }
+
+        // Draw wind turbine
+        drawWindTurbine(g, screenWidth / 2 - 50, screenHeight / 2 + 50);
+    }
+
+    private void drawSun(Graphics g, int x, int y, int diameter) {
+        g.setColor(Color.YELLOW);
+        g.fillOval(x, y, diameter, diameter); // Draw the sun
+    }
+
+    private void drawWindTurbine(Graphics g, int x, int y) {
+        // Draw the tower
+        g.setColor(Color.DARK_GRAY);
+        g.fillRect(x + 20, y, 10, 100); // Tower
+
+        // Draw the blades
+        g.setColor(Color.WHITE);
+        drawBlade(g, x + 25, y, angle);
+        drawBlade(g, x + 25, y, angle + 120);
+        drawBlade(g, x + 25, y, angle + 240);
+
+        // Update the angle for the next frame
+        angle += 2; // Increase angle for rotation
+        if (angle >= 360) {
+            angle = 0; // Reset angle
+        }
+    }
+
+    private void drawBlade(Graphics g, int x, int y, double angle) {
+        // Calculate blade endpoints
+        int length = 50; // Length of blades
+        int x1 = (int) (x + 25 + length * Math.cos(Math.toRadians(angle)));
+        int y1 = (int) (y + length * Math.sin(Math.toRadians(angle)));
+
+        g.drawLine(x + 25, y, x1, y1); // Draw blade
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        repaint(); // Redraw the scene
+
+        // Move clouds
+        for (Cloud cloud : clouds) {
+            cloud.move();
+        }
+
+        // Move birds
+        for (Bird bird : birds) {
+            bird.move();
+        }
+
+        // Add new clouds randomly
+        if (random.nextInt(30) == 0) {
+            clouds.add(new Cloud(random.nextInt(screenWidth), random.nextInt(100) + 50));
+        }
+
+        // Add new birds randomly
+        if (random.nextInt(40) == 0) {
+            birds.add(new Bird(random.nextInt(screenWidth), random.nextInt(screenHeight / 2)));
+        }
+    }
+
+    public static void main(String[] args) {
+        JFrame frame = new JFrame("Wind Turbine Animation");
+        WindTurbineAnimation animation = new WindTurbineAnimation();
+        frame.add(animation);
+        frame.pack();
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setLocationRelativeTo(null); // Center the window
+        frame.setVisible(true);
+    }
+
+    public Timer getTimer() {
+        return timer;
+    }
+
+    public void setTimer(Timer timer) {
+        this.timer = timer;
+    }
+
+    public int getScreenHeight() {
+        return screenHeight;
+    }
+
+    public void setScreenHeight(int screenHeight) {
+        this.screenHeight = screenHeight;
+    }
+
+    public int getScreenWidth() {
+        return screenWidth;
+    }
+
+    public void setScreenWidth(int screenWidth) {
+        this.screenWidth = screenWidth;
+    }
+
+    public Random getRandom() {
+        return random;
+    }
+
+    public void setRandom(Random random) {
+        this.random = random;
+    }
+}
+
+// Cloud class to represent individual clouds
+class Cloud {
+    private int x, y;
+    private int speed;
+
+    public Cloud(int x, int y) {
+        this.x = x;
+        this.y = y;
+        this.speed = new Random().nextInt(2) + 1; // Random speed for clouds
+    }
+
+    public void draw(Graphics g) {
+        g.setColor(Color.WHITE);
+        g.fillOval(x, y, 60, 40); // Cloud body
+        g.fillOval(x + 10, y - 20, 60, 40); // Left puff
+        g.fillOval(x + 30, y - 20, 60, 40); // Right puff
+    }
+
+    public void move() {
+        x += speed; // Move the cloud to the right
+        if (x > 1200) {
+            x = -60; // Reset cloud position when it goes off screen
+        }
+    }
+
+    public int getSpeed() {
+        return speed;
+    }
+
+    public void setSpeed(int speed) {
+        this.speed = speed;
+    }
+
+    public int getX() {
+        return x;
+    }
+
+    public void setX(int x) {
+        this.x = x;
+    }
+
+    public int getY() {
+        return y;
+    }
+
+    public void setY(int y) {
+        this.y = y;
+    }
+}
+
+// Bird class to represent individual birds
+class Bird {
+    private int x, y;
+    private int speed;
+
+    public Bird(int x, int y) {
+        this.x = x;
+        this.y = y;
+        this.speed = 2; // Fixed speed for birds
+    }
+
+    public void draw(Graphics g) {
+        g.setColor(Color.BLACK);
+        g.fillArc(x, y, 20, 10, 0, 180); // Simple bird shape
+    }
+
+    public void move() {
+        x += speed; // Move the bird to the right
+        if (x > 1200) {
+            x = -20; // Reset bird position when it goes off screen
+        }
+    }
+
+    public int getY() {
+        return y;
+    }
+
+    public void setY(int y) {
+        this.y = y;
+    }
+
+    public int getSpeed() {
+        return speed;
+    }
+
+    public void setSpeed(int speed) {
+        this.speed = speed;
+    }
+}
